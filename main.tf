@@ -48,6 +48,19 @@ resource "azurerm_linux_virtual_machine" "MyfirstprojectV2" {
     version   = "latest"
   }
 }
+##Public IP
+resource "azurerm_public_ip" "PIP" {
+  name                = "MyfirstprojectV2-PIP1"
+  resource_group_name = azurerm_resource_group.MyfirstprojectV2.name
+  location            = azurerm_resource_group.MyfirstprojectV2.location
+  allocation_method   = "Static"
+
+  tags = {
+    Environment = "Test2"
+    Owner = "Soumya"
+    Project = "Jenkins-PoC2"
+  }
+}
 ##Network Interface
 resource "azurerm_network_interface" "main" {
   name                = "MyfirstprojectV2-nic"
@@ -58,6 +71,7 @@ resource "azurerm_network_interface" "main" {
     name                          = "ipconfig"
     subnet_id                     = azurerm_subnet.internal.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.PIP.id
   }
 }
 ##Netwrok Security Group
