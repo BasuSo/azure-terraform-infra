@@ -20,18 +20,6 @@ resource "azurerm_subnet" "internal" {
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = ["10.0.2.0/24"]
 }
-##Network Interface
-resource "azurerm_network_interface" "main" {
-  name                = "MyfirstprojectV2-nic"
-  location            = azurerm_resource_group.MyfirstprojectV2.location
-  resource_group_name = azurerm_resource_group.MyfirstprojectV2.name
-
-  ip_configuration {
-    name                          = "ipconfig"
-    subnet_id                     = azurerm_subnet.internal.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
 ##Virtual Machine
 resource "azurerm_linux_virtual_machine" "MyfirstprojectV2" {
   name                = "MyfirstprojectV2-VM"
@@ -59,4 +47,55 @@ resource "azurerm_linux_virtual_machine" "MyfirstprojectV2" {
     sku       = "22_04-lts-gen2"
     version   = "latest"
   }
+}
+##Network Interface
+resource "azurerm_network_interface" "main" {
+  name                = "MyfirstprojectV2-nic"
+  location            = azurerm_resource_group.MyfirstprojectV2.location
+  resource_group_name = azurerm_resource_group.MyfirstprojectV2.name
+
+  ip_configuration {
+    name                          = "ipconfig"
+    subnet_id                     = azurerm_subnet.internal.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+##Netwrok Security Group
+resource "azurerm_network_security_group" "NSG" {
+  name                = "JMyfirstprojectV2-SG1"
+  location            = azurerm_resource_group.MyfirstprojectV2.location
+  resource_group_name = azurerm_resource_group.MyfirstprojectV2.name
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "Jenkins"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8080"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  tags = {
+    Environment = "Test2"
+    Owner = "Soumya"
+    Project = "Jenkins-PoC2"
+  }
+}
+##NSG NIC Association
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.main.id
+  network_security_group_id = azurerm_network_security_group.NSG.id
 }
