@@ -32,13 +32,13 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply') {
+        stage('Terraform Destroy') {
             input {
-                message "Do you want to apply Terraform changes?"
-                ok "Apply"
+                message "Do you want to destroy Terraform changes?"
+                ok "Destroy"
             }
             steps {
-                sh 'terraform apply -auto-approve tfplan'
+                sh 'terraform destroy -auto-approve tfplan'
             }
         }
     }
