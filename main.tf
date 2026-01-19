@@ -33,7 +33,7 @@ resource "azurerm_linux_virtual_machine" "MyfirstprojectV2" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("${path.module}ssh/id_rsa.pub")
+    public_key = file("${path.module}/ssh/id_rsa.pub")
   }
 
   os_disk {
